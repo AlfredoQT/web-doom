@@ -32,7 +32,6 @@ class WallGrid {
     }
 
     randomize() {
-        // This is good man
         for (var i = 0; i < this.size * this.size; i++)
             this.grid[i] = Math.random() < 0.3 ? 1 : 0;
     }
@@ -44,7 +43,6 @@ class WallGrid {
                         Math.floor( y ) > this.size - 1)
             return -1;
 
-        // Good!
         return this.grid[ Math.floor( y ) * this.size + Math.floor( x ) ];
     }
 }
@@ -61,6 +59,7 @@ class Map {
 
 	    this.skybox = new Bitmap( 'images/deathvalley_panorama.jpg', 2000, 750 );
 	    this.wallTexture = new Bitmap( 'images/wall_texture.jpg', 1024, 1024 );
+	    this.light = 0;
     }
 
     get wallGrid() { return app.private.members( this ).wallGrid; }
@@ -72,6 +71,7 @@ class Map {
 
 	cast( point, castAngle, castRange ) {
 
+	    let noWall = { length2: Infinity };
         let castRay = {
             x:        point.x,
             y:        point.y,
@@ -99,7 +99,7 @@ class Map {
         } else {
 
             nextStepRay = this._inspect( stepY, 0, 1, theRay.distance, stepY.x, theRay.angle );
-        }
+        };
         nextStepRay.angle = theRay.angle;
         nextStepRay.range = theRay.range;
 
@@ -139,4 +139,16 @@ class Map {
 
         return deltaStep;
     }
+
+	update( seconds ) {
+
+	    if (this.light > 0) {
+
+	        this.light = Math.max( this.light - 10 * seconds, 0 );
+
+	    } else if (Math.random() * 8 < seconds) {
+
+	        this.light = 4;
+	    }
+	}
 }

@@ -16,7 +16,10 @@
 //const MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 
 // Constants
+const COUNTER       = 1;
 const SECONDS_AS_MS = 1000;
+const TARGET_FPS    = 60;
+const TARGET_MS_PER_TICK = SECONDS_AS_MS / TARGET_FPS;
 
 class Game {
 
@@ -24,22 +27,21 @@ class Game {
 
     	let m = app.private.members( this, {
 
+	        // Start with tick 0
+	    	tick: 0,
 	    	lastTime: 0,
 
 	    	theMap: null,
             theCharacter: null,
             theControls: null,
             theCamera: null
-        });
+    	});
 
 	    let res = MOBILE ? 768 : 1024;
 	    m.theMap =       new Map( 200 );
 	    m.theCharacter = new Player( 15.3, -1.2, Math.PI * 0.3 );
 	    m.theControls =  new Controls();
-        m.theCamera =    new Camera( $('#display').get(0), res, 0.9 );
-        
-        // Some binding
-        this._frame = this._frame.bind(this);
+	    m.theCamera =    new Camera( $('#display').get(0), res, 0.9 );
 
 	    $('#start-button').on('click', ( event ) =>{
             $('#start-button').fadeOut( 1 * SECONDS_AS_MS );
@@ -47,26 +49,28 @@ class Game {
             $('#game-area').fadeIn( 1 * SECONDS_AS_MS );
             $('#hud-overlay').fadeIn( 2 * SECONDS_AS_MS );
 	    });
+
+        $('#the-button').on('click', () => {
+            // $.post('server.php', "cmd=update")
+            // 	.then( ( resultString ) => {
+            // 		// Do something with the obj
+    		//     });
+        });
+        //this.profiler = new Profiler();
+        this._frame = this._frame.bind(this);
     }
 
     run() {
         let m = app.private.members( this );
-        
+        //this.profiler.stopTimer( cp );
+        //this.profiler.logTimer( cp );
 		m.theMap.randomize();
-        this._start( this._frame );
+        requestAnimationFrame(this._frame)
 	}
-
-	_start( callback ) {
-        let m = app.private.members( this );
-        
-        // Fire it once
-        window.requestAnimationFrame( callback );
-    }
 
 	_frame( time ) {
         let m = app.private.members( this );
 
-        // Delta time
         let seconds = (time - m.lastTime) / SECONDS_AS_MS;
         m.lastTime = time;
 
@@ -80,6 +84,7 @@ class Game {
 	_update( seconds ) {
         let m = app.private.members( this );
 
+        m.theMap.update( seconds );
     	m.theCharacter.update( m.theControls.states, m.theMap, seconds );
 	}
 

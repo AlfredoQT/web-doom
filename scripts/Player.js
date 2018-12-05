@@ -32,7 +32,6 @@ class Player {
 	rotate( angle ) {
         
 		let m = app.private.members( this );
-		// Restrict to 180
 		m.direction = (m.direction + angle + Math.PI * 2) % (Math.PI * 2);
 	}
 

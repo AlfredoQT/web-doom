@@ -86,9 +86,8 @@ class Camera {
 	drawColumns( player, map ) {
         let m = app.private.members( this );
 
-		m.ctx.save();
+	    m.ctx.save();
 
-		// Draw a column for every pixel
 	    for (let column = 0; column < m.resolution; column++) {
 
 	        let x = column / m.resolution - 0.5;
@@ -109,8 +108,10 @@ class Camera {
 	    let width = Math.ceil( m.spacing );
 	    let hit = -1;
 
-		while (++hit < ray.length && ray[hit].height <= 0);
+	    while (++hit < ray.length && ray[hit].height <= 0);
+
 	    for (let s = ray.length - 1; s >= 0; s--) {
+
 	        let step = ray[s];
 	        if (s === hit) {
 	            let textureX = Math.floor( texture.width * step.offset );
@@ -128,17 +129,17 @@ class Camera {
                 m.ctx.globalAlpha = Math.max( (step.distance + step.shading) / m.lightRange - mapLightFactor, 0 );
                 m.ctx.fillRect( left, wall.top, width, wall.height );
 	        }
-	        m.ctx.fillStyle = '#ffffff';
-	        m.ctx.globalAlpha = 0.15;
 
-	        if (m.rainEnabled) {
-				let rainDrops = Math.pow( Math.random(), 3 ) * s;
-	            let rain = (rainDrops > 0) && this.project( 0.1, angle, step.distance );
-	            while (--rainDrops > 0) {
-	                m.ctx.fillRect( left, Math.random() * rain.top, 1, rain.height );
-	            }
-	        }
 	    }
+		if (m.rainEnabled) {
+			m.ctx.fillStyle = '#ffffff';
+	        m.ctx.globalAlpha = 0.15;
+		    let rainDrops = Math.pow( Math.random(), 3 ) * 2;
+		    let rain = (rainDrops > 0) && this.project( 0.1, angle, 1 );
+		    while (--rainDrops > 0) {
+		        m.ctx.fillRect( left, Math.random() * rain.top, 1, rain.height );
+		    }
+		}
 	}
 
 	project( height, angle, distance ) {
